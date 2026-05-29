@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-name: technology-data
+name: tech-data
 channels:
 - conda-forge
 - bioconda
