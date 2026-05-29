@@ -15,9 +15,17 @@ from tabula import read_pdf
 
 if __name__ == "__main__":
     if "snakemake" not in globals():
-        from _helpers import mock_snakemake
+        from types import SimpleNamespace
 
-        snakemake = mock_snakemake("convert_pdf_fraunhofer_to_dataframe")
+        snakemake = SimpleNamespace(
+            input=SimpleNamespace(
+                fraunhofer="docu/Anhang-Studie-Wege-zu-einem-klimaneutralen-Energiesystem.pdf",
+            ),
+            output=SimpleNamespace(
+                costs="inputs/Fraunhofer_ISE_costs.csv",
+                energy_prices="inputs/Fraunhofer_ISE_energy_prices.csv",
+            ),
+        )
 
     df_list = read_pdf(snakemake.input.fraunhofer, pages="3-15", multiple_tables=True)
     print(df_list)

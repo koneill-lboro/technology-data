@@ -16,11 +16,12 @@ from tabula import read_pdf
 
 # Detect running outside of snakemake and mock snakemake for testing
 if "snakemake" not in globals():
-    from vresutils.snakemake import MockSnakemake
+    from types import SimpleNamespace
 
-    snakemake = MockSnakemake()
-    snakemake.input = dict(EWG="docu/EWG_LUT_100RE_All_Sectors_Global_Report_2019.pdf")
-    snakemake.output = dict(costs="inputs/EWG_costs.csv")
+    snakemake = SimpleNamespace(
+        input={"EWG": "docu/EWG_LUT_100RE_All_Sectors_Global_Report_2019.pdf"},
+        output={"costs": "inputs/EWG_costs.csv"},
+    )
 
 df_list = read_pdf(snakemake.input["EWG"], pages="305-309", multiple_tables=True)
 # %%

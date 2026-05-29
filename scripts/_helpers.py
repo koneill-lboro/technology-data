@@ -100,15 +100,20 @@ def mock_snakemake(
         keyword arguments fixing the wildcards. Only necessary if wildcards are
         needed.
     """
+    import logging
     import os
 
     import snakemake as sm
     from snakemake.api import Workflow
     from snakemake.common import SNAKEFILE_CHOICES
+    from snakemake.dag import DAG
+    from snakemake.jobs import Job
+    from snakemake.logging import LoggerManager
     from snakemake.script import Snakemake
     from snakemake.settings.types import (
         ConfigSettings,
         DAGSettings,
+        OutputSettings,
         ResourceSettings,
         StorageSettings,
         WorkflowSettings,
@@ -146,13 +151,15 @@ def mock_snakemake(
         workflow_settings = WorkflowSettings()
         storage_settings = StorageSettings()
         dag_settings = DAGSettings(rerun_triggers=[])
+        output_settings = OutputSettings()
+        logger_manager = LoggerManager(logging.getLogger(), output_settings)
         workflow = Workflow(
             config_settings,
             resource_settings,
             workflow_settings,
+            logger_manager,
             storage_settings,
             dag_settings,
-            storage_provider_settings=dict(),
         )
         workflow.include(snakefile)
 
@@ -164,9 +171,9 @@ def mock_snakemake(
 
         workflow.global_resources = {}
         rule = workflow.get_rule(rulename)
-        dag = sm.dag.DAG(workflow, rules=[rule])
+        dag = DAG(workflow, rules=[rule])
         wc = Dict(wildcards)
-        job = sm.jobs.Job(rule, dag, wc)
+        job = Job(rule, dag, wc)
 
         def make_accessable(*ios):
             for io in ios:
